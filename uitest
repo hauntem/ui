@@ -1,4 +1,4 @@
--- // MyUILib - UI Library w/ Tabs, Dragging, Unload
+-- // MyUILib - Draggable UI with Tabs, Toggles, Unload
 
 local MyUILib = {}
 
@@ -14,16 +14,16 @@ screenGui.ResetOnSpawn = false
 screenGui.IgnoreGuiInset = true
 screenGui.Parent = PlayerGui
 
--- Drag utility
-local function MakeDraggable(frame, dragHandle)
+-- Dragging function
+local function MakeDraggable(frame, dragBar)
     local dragging, offset
-    dragHandle.InputBegan:Connect(function(input)
+    dragBar.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true
             offset = Vector2.new(input.Position.X - frame.Position.X.Offset, input.Position.Y - frame.Position.Y.Offset)
         end
     end)
-    dragHandle.InputEnded:Connect(function(input)
+    dragBar.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = false
         end
@@ -35,7 +35,7 @@ local function MakeDraggable(frame, dragHandle)
     end)
 end
 
--- Main CreateWindow
+-- Create a window and return a controller object
 function MyUILib:CreateWindow(name, size)
     local frame = Instance.new("Frame")
     frame.Name = name or "Window"
@@ -60,7 +60,7 @@ function MyUILib:CreateWindow(name, size)
     title.Font = Enum.Font.SourceSansBold
     title.TextSize = 20
     title.TextXAlignment = Enum.TextXAlignment.Left
-    title.Padding = 5
+    title.Position = UDim2.new(0, 5, 0, 0)
     title.Parent = top
 
     MakeDraggable(frame, top)
@@ -83,8 +83,8 @@ function MyUILib:CreateWindow(name, size)
     local tabFrames = {}
 
     local function SwitchTab(name)
-        for n, frame in pairs(tabFrames) do
-            frame.Visible = n == name
+        for n, tabFrame in pairs(tabFrames) do
+            tabFrame.Visible = (n == name)
         end
     end
 
@@ -112,6 +112,10 @@ function MyUILib:CreateWindow(name, size)
             SwitchTab(name)
         end)
 
+        if #tabHolder:GetChildren() == 1 then
+            SwitchTab(name) -- auto-show first tab
+        end
+
         return tabFrame
     end
 
@@ -121,7 +125,7 @@ function MyUILib:CreateWindow(name, size)
     }
 end
 
--- Add toggle to any frame
+-- Toggle
 function MyUILib:AddToggle(parent, text, default, callback)
     local count = 0
     for _, v in ipairs(parent:GetChildren()) do
@@ -149,7 +153,7 @@ function MyUILib:AddToggle(parent, text, default, callback)
     button.Text = text .. " [" .. (state and "ON" or "OFF") .. "]"
 end
 
--- Add unload button to frame
+-- Unload button
 function MyUILib:AddUnloadButton(parent)
     local button = Instance.new("TextButton")
     button.Size = UDim2.new(0, 100, 0, 30)
@@ -166,7 +170,7 @@ function MyUILib:AddUnloadButton(parent)
     end)
 end
 
--- Unload GUI
+-- Cleanup
 function MyUILib:Unload()
     if screenGui then
         screenGui:Destroy()
