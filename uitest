@@ -88,10 +88,10 @@ function MyUILib:CreateWindow(title, size)
         end
     end
 
-    local function CreateTab(name)
+    function MyUILib:CreateTab(name)
         local tabButton = Instance.new("TextButton")
         tabButton.Size = UDim2.new(1, 0, 0, 30)
-        tabButton.Position = UDim2.new(0, 0, 0, (#tabHolder:GetChildren() - 1) * 30)
+        tabButton.Position = UDim2.new(0, 0, 0, (#tabHolder:GetChildren()) * 30)
         tabButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
         tabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
         tabButton.Text = name
@@ -120,8 +120,7 @@ function MyUILib:CreateWindow(title, size)
     end
 
     return setmetatable({
-        Main = frame,
-        CreateTab = CreateTab
+        Main = frame
     }, { __index = MyUILib })
 end
 
@@ -129,25 +128,25 @@ end
 function MyUILib:AddToggle(parent, text, default, callback)
     local count = #parent:GetChildren()
 
+    local label = tostring(text or "Toggle")
+
     local button = Instance.new("TextButton")
     button.Size = UDim2.new(0, 200, 0, 30)
     button.Position = UDim2.new(0, 10, 0, 10 + (count * 35))
     button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    button.Text = text
     button.Font = Enum.Font.SourceSans
     button.TextSize = 18
+    button.Text = label .. " [" .. (default and "ON" or "OFF") .. "]"
     button.Parent = parent
 
     local state = default
 
     button.MouseButton1Click:Connect(function()
         state = not state
-        button.Text = text .. " [" .. (state and "ON" or "OFF") .. "]"
+        button.Text = label .. " [" .. (state and "ON" or "OFF") .. "]"
         if callback then callback(state) end
     end)
-
-    button.Text = text .. " [" .. (state and "ON" or "OFF") .. "]"
 end
 
 -- Unload
