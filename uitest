@@ -13,14 +13,12 @@ screenGui.Name = "MyUILibGUI"
 screenGui.ResetOnSpawn = false
 screenGui.IgnoreGuiInset = true
 screenGui.Parent = PlayerGui
-MakeDraggable(frame, top)
-
 
 -- Dragging function
 local function MakeDraggable(frame, dragBar)
     local UserInputService = game:GetService("UserInputService")
     local dragging = false
-    local dragInput, dragStart, startPos
+    local dragStart, startPos
 
     local function update(input)
         local delta = input.Position - dragStart
@@ -46,7 +44,6 @@ local function MakeDraggable(frame, dragBar)
         end
     end)
 end
-
 
 -- Create Window
 function MyUILib:CreateWindow(title, size)
@@ -76,6 +73,7 @@ function MyUILib:CreateWindow(title, size)
     titleLabel.Position = UDim2.new(0, 5, 0, 0)
     titleLabel.Parent = top
 
+    -- Call MakeDraggable after both frame and top are defined
     MakeDraggable(frame, top)
 
     local tabHolder = Instance.new("Frame")
