@@ -1,0 +1,63 @@
+-- // MyUILib.lua - A modular Roblox UI Library
+
+local MyUILib = {}
+
+-- Services
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+-- Create Main ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "MyUILibGUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = PlayerGui
+
+-- Library Functions
+
+-- Creates a window frame
+function MyUILib:CreateWindow(name, size)
+    local frame = Instance.new("Frame")
+    frame.Name = name or "Window"
+    frame.Size = UDim2.new(0, size.X or 300, 0, size.Y or 200)
+    frame.Position = UDim2.new(0.5, -150, 0.5, -100)
+    frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    frame.BorderSizePixel = 0
+    frame.Parent = screenGui
+
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, 0, 0, 30)
+    title.BackgroundTransparency = 1
+    title.Text = name or "MyUILib Window"
+    title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    title.Font = Enum.Font.SourceSans
+    title.TextSize = 24
+    title.Parent = frame
+
+    return frame
+end
+
+-- Adds a toggle button to a frame
+function MyUILib:AddToggle(parent, text, default, callback)
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(1, -10, 0, 30)
+    button.Position = UDim2.new(0, 5, 0, 40 + (#parent:GetChildren() * 35))
+    button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.Text = text
+    button.Font = Enum.Font.SourceSans
+    button.TextSize = 20
+    button.Parent = parent
+
+    local state = default
+
+    button.MouseButton1Click:Connect(function()
+        state = not state
+        button.Text = text .. " [" .. (state and "ON" or "OFF") .. "]"
+        if callback then callback(state) end
+    end)
+
+    button.Text = text .. " [" .. (state and "ON" or "OFF") .. "]"
+end
+
+return MyUILib
