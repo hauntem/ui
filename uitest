@@ -1,4 +1,4 @@
--- // MyUILib - Draggable UI with Tabs, Toggles, Unload
+-- // MyUILib - Fully Functional UI Library
 
 local MyUILib = {}
 
@@ -7,7 +7,7 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
--- Main container
+-- Create screen GUI
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "MyUILibGUI"
 screenGui.ResetOnSpawn = false
@@ -35,12 +35,12 @@ local function MakeDraggable(frame, dragBar)
     end)
 end
 
--- Create a window and return a controller object
-function MyUILib:CreateWindow(name, size)
+-- Create Window
+function MyUILib:CreateWindow(title, size)
     local frame = Instance.new("Frame")
-    frame.Name = name or "Window"
+    frame.Name = title or "Window"
     frame.Size = UDim2.new(0, size.X or 400, 0, size.Y or 300)
-    frame.Position = UDim2.new(0.5, -((size.X or 400)/2), 0.5, -((size.Y or 300)/2))
+    frame.Position = UDim2.new(0.5, -(size.X or 400)/2, 0.5, -(size.Y or 300)/2)
     frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     frame.BorderSizePixel = 0
     frame.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -52,16 +52,16 @@ function MyUILib:CreateWindow(name, size)
     top.BorderSizePixel = 0
     top.Parent = frame
 
-    local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(1, 0, 1, 0)
-    title.BackgroundTransparency = 1
-    title.Text = name or "MyUILib"
-    title.TextColor3 = Color3.fromRGB(255, 255, 255)
-    title.Font = Enum.Font.SourceSansBold
-    title.TextSize = 20
-    title.TextXAlignment = Enum.TextXAlignment.Left
-    title.Position = UDim2.new(0, 5, 0, 0)
-    title.Parent = top
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Size = UDim2.new(1, 0, 1, 0)
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.Text = title or "MyUILib"
+    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    titleLabel.Font = Enum.Font.SourceSansBold
+    titleLabel.TextSize = 20
+    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    titleLabel.Position = UDim2.new(0, 5, 0, 0)
+    titleLabel.Parent = top
 
     MakeDraggable(frame, top)
 
@@ -83,15 +83,15 @@ function MyUILib:CreateWindow(name, size)
     local tabFrames = {}
 
     local function SwitchTab(name)
-        for n, tabFrame in pairs(tabFrames) do
-            tabFrame.Visible = (n == name)
+        for tabName, tabFrame in pairs(tabFrames) do
+            tabFrame.Visible = (tabName == name)
         end
     end
 
     local function CreateTab(name)
         local tabButton = Instance.new("TextButton")
         tabButton.Size = UDim2.new(1, 0, 0, 30)
-        tabButton.Position = UDim2.new(0, 0, 0, #tabHolder:GetChildren() * 30)
+        tabButton.Position = UDim2.new(0, 0, 0, (#tabHolder:GetChildren() - 1) * 30)
         tabButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
         tabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
         tabButton.Text = name
@@ -113,24 +113,21 @@ function MyUILib:CreateWindow(name, size)
         end)
 
         if #tabHolder:GetChildren() == 1 then
-            SwitchTab(name) -- auto-show first tab
+            SwitchTab(name)
         end
 
         return tabFrame
     end
 
-    return {
+    return setmetatable({
         Main = frame,
         CreateTab = CreateTab
-    }
+    }, { __index = MyUILib })
 end
 
 -- Toggle
 function MyUILib:AddToggle(parent, text, default, callback)
-    local count = 0
-    for _, v in ipairs(parent:GetChildren()) do
-        if v:IsA("TextButton") then count += 1 end
-    end
+    local count = #parent:GetChildren()
 
     local button = Instance.new("TextButton")
     button.Size = UDim2.new(0, 200, 0, 30)
@@ -153,7 +150,7 @@ function MyUILib:AddToggle(parent, text, default, callback)
     button.Text = text .. " [" .. (state and "ON" or "OFF") .. "]"
 end
 
--- Unload button
+-- Unload
 function MyUILib:AddUnloadButton(parent)
     local button = Instance.new("TextButton")
     button.Size = UDim2.new(0, 100, 0, 30)
@@ -170,7 +167,7 @@ function MyUILib:AddUnloadButton(parent)
     end)
 end
 
--- Cleanup
+-- Destroy UI
 function MyUILib:Unload()
     if screenGui then
         screenGui:Destroy()
