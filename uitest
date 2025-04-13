@@ -1,4 +1,4 @@
--- // MyUILib - Fully Functional UI Library
+-- // MyUILib - Fully Functional UI Library with Enhanced Styling
 
 local MyUILib = {}
 
@@ -51,16 +51,29 @@ function MyUILib:CreateWindow(title, size)
     frame.Name = title or "Window"
     frame.Size = UDim2.new(0, size.X or 400, 0, size.Y or 300)
     frame.Position = UDim2.new(0.5, -(size.X or 400)/2, 0.5, -(size.Y or 300)/2)
-    frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    frame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
     frame.BorderSizePixel = 0
     frame.AnchorPoint = Vector2.new(0.5, 0.5)
     frame.Parent = screenGui
 
+    -- Add rounded corners to the frame
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 12) -- Rounded corners
+    corner.Parent = frame
+
     local top = Instance.new("Frame")
     top.Size = UDim2.new(1, 0, 0, 30)
-    top.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    top.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     top.BorderSizePixel = 0
     top.Parent = frame
+
+    -- Gradient for title bar
+    local titleBarGradient = Instance.new("UIGradient")
+    titleBarGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 40, 40)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 20, 20)),
+    }
+    titleBarGradient.Parent = top
 
     local titleLabel = Instance.new("TextLabel")
     titleLabel.Size = UDim2.new(1, 0, 1, 0)
@@ -70,26 +83,32 @@ function MyUILib:CreateWindow(title, size)
     titleLabel.Font = Enum.Font.SourceSansBold
     titleLabel.TextSize = 20
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-    titleLabel.Position = UDim2.new(0, 5, 0, 0)
+    titleLabel.Position = UDim2.new(0, 10, 0, 0)
     titleLabel.Parent = top
 
     -- Call MakeDraggable after both frame and top are defined
     MakeDraggable(frame, top)
 
+    -- Tab holder with shadows and padding
     local tabHolder = Instance.new("Frame")
     tabHolder.Size = UDim2.new(0, 100, 1, -30)
     tabHolder.Position = UDim2.new(0, 0, 0, 30)
-    tabHolder.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    tabHolder.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
     tabHolder.BorderSizePixel = 0
     tabHolder.Parent = frame
 
+    -- Content holder with rounded corners and shadow
     local contentHolder = Instance.new("Frame")
     contentHolder.Size = UDim2.new(1, -100, 1, -30)
     contentHolder.Position = UDim2.new(0, 100, 0, 30)
-    contentHolder.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    contentHolder.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     contentHolder.BorderSizePixel = 0
     contentHolder.ClipsDescendants = true
     contentHolder.Parent = frame
+
+    local cornerContent = Instance.new("UICorner")
+    cornerContent.CornerRadius = UDim.new(0, 8) -- Rounded corners for content holder
+    cornerContent.Parent = contentHolder
 
     local tabFrames = {}
 
@@ -103,12 +122,20 @@ function MyUILib:CreateWindow(title, size)
         local tabButton = Instance.new("TextButton")
         tabButton.Size = UDim2.new(1, 0, 0, 30)
         tabButton.Position = UDim2.new(0, 0, 0, (#tabHolder:GetChildren()) * 30)
-        tabButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+        tabButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
         tabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
         tabButton.Text = name
         tabButton.Font = Enum.Font.SourceSansBold
         tabButton.TextSize = 16
         tabButton.Parent = tabHolder
+
+        -- Hover effect for tabs
+        tabButton.MouseEnter:Connect(function()
+            tabButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        end)
+        tabButton.MouseLeave:Connect(function()
+            tabButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        end)
 
         local tabFrame = Instance.new("Frame")
         tabFrame.Name = name
@@ -135,7 +162,7 @@ function MyUILib:CreateWindow(title, size)
     }, { __index = MyUILib })
 end
 
--- Toggle
+-- Toggle with enhanced styling
 function MyUILib:AddToggle(parent, text, default, callback)
     local count = #parent:GetChildren()
 
@@ -144,12 +171,20 @@ function MyUILib:AddToggle(parent, text, default, callback)
     local button = Instance.new("TextButton")
     button.Size = UDim2.new(0, 200, 0, 30)
     button.Position = UDim2.new(0, 10, 0, 10 + (count * 35))
-    button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
     button.TextColor3 = Color3.fromRGB(255, 255, 255)
     button.Font = Enum.Font.SourceSans
     button.TextSize = 18
     button.Text = label .. " [" .. (default and "ON" or "OFF") .. "]"
     button.Parent = parent
+
+    -- Hover effect for button
+    button.MouseEnter:Connect(function()
+        button.BackgroundColor3 = Color3.fromRGB(75, 75, 75)
+    end)
+    button.MouseLeave:Connect(function()
+        button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    end)
 
     local state = default
 
